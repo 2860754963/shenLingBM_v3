@@ -2,7 +2,7 @@ import { reactive } from "vue";
 import { isPhone } from "@pureadmin/utils";
 import type { FormRules } from "element-plus";
 import { $t, transformI18n } from "@/plugins/i18n";
-import { useUserStoreHook } from "@/store/modules/user";
+// import { useUserStoreHook } from "@/store/modules/user";
 
 /** 6位数字验证码正则 */
 export const REGEXP_SIX = /^\d{6}$/;
@@ -18,11 +18,14 @@ const loginRules = reactive<FormRules>({
       validator: (rule, value, callback) => {
         if (value === "") {
           callback(new Error(transformI18n($t("login.purePassWordReg"))));
-        } else if (!REGEXP_PWD.test(value)) {
-          callback(new Error(transformI18n($t("login.purePassWordRuleReg"))));
-        } else {
+        }else {
           callback();
         }
+        /*
+        * else if (!REGEXP_PWD.test(value)) {
+          callback(new Error(transformI18n($t("login.purePassWordRuleReg"))));
+        } 
+        */ 
       },
       trigger: "blur"
     }
@@ -32,13 +35,16 @@ const loginRules = reactive<FormRules>({
       validator: (rule, value, callback) => {
         if (value === "") {
           callback(new Error(transformI18n($t("login.pureVerifyCodeReg"))));
-        } else if (useUserStoreHook().verifyCode !== value) {
+        }  else {
+          callback();
+        }
+        /**
+         * else if (useUserStoreHook().verifyCode !== value) {
           callback(
             new Error(transformI18n($t("login.pureVerifyCodeCorrectReg")))
           );
-        } else {
-          callback();
         }
+         */
       },
       trigger: "blur"
     }
@@ -66,11 +72,14 @@ const phoneRules = reactive<FormRules>({
       validator: (rule, value, callback) => {
         if (value === "") {
           callback(new Error(transformI18n($t("login.pureVerifyCodeReg"))));
-        } else if (!REGEXP_SIX.test(value)) {
-          callback(new Error(transformI18n($t("login.pureVerifyCodeSixReg"))));
         } else {
           callback();
         }
+        /**
+         * if (!REGEXP_SIX.test(value)) {
+          callback(new Error(transformI18n($t("login.pureVerifyCodeSixReg"))));
+        } else 
+         */
       },
       trigger: "blur"
     }
@@ -98,11 +107,14 @@ const updateRules = reactive<FormRules>({
       validator: (rule, value, callback) => {
         if (value === "") {
           callback(new Error(transformI18n($t("login.pureVerifyCodeReg"))));
-        } else if (!REGEXP_SIX.test(value)) {
-          callback(new Error(transformI18n($t("login.pureVerifyCodeSixReg"))));
-        } else {
+        }  else {
           callback();
         }
+        /**
+         * else if (!REGEXP_SIX.test(value)) {
+          callback(new Error(transformI18n($t("login.pureVerifyCodeSixReg"))));
+        }
+         */
       },
       trigger: "blur"
     }
@@ -112,11 +124,14 @@ const updateRules = reactive<FormRules>({
       validator: (rule, value, callback) => {
         if (value === "") {
           callback(new Error(transformI18n($t("login.purePassWordReg"))));
-        } else if (!REGEXP_PWD.test(value)) {
-          callback(new Error(transformI18n($t("login.purePassWordRuleReg"))));
         } else {
           callback();
         }
+        /**
+         * if (!REGEXP_PWD.test(value)) {
+          callback(new Error(transformI18n($t("login.purePassWordRuleReg"))));
+        } else 
+         */
       },
       trigger: "blur"
     }

@@ -81,6 +81,7 @@ export function useNav() {
   });
 
   const { $storage, $config } = useGlobal<GlobalPropertiesApi>();
+  // console.log("🚀 ~ useNav ~ $config:", $config)
   const layout = computed(() => {
     return $storage?.layout?.layout;
   });

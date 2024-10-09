@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
-    "author": {
+  "author": {
     "name": "Nicholas",
     "email": "2860754963@qq.com",
     "url": "https://github.com/2860754963"
@@ -75,6 +75,7 @@
     "js-cookie": "^3.0.5",
     "jsbarcode": "^3.11.6",
     "localforage": "^1.10.0",
+    "lodash": "^4.17.21",
     "mint-filter": "^4.0.3",
     "mitt": "^3.0.1",
     "mqtt": "4.3.7",

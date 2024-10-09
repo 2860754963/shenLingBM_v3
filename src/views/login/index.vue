@@ -32,9 +32,10 @@ import Lock from "@iconify-icons/ri/lock-fill";
 import Check from "@iconify-icons/ep/check";
 import User from "@iconify-icons/ri/user-3-fill";
 import Info from "@iconify-icons/ri/information-line";
+import { key } from "localforage";
 
 defineOptions({
-  name: "Login"
+  name: "Login",
 });
 
 const imgCode = ref("");
@@ -57,20 +58,27 @@ const { title, getDropdownItemStyle, getDropdownItemClass } = useNav();
 const { locale, translationCh, translationEn } = useTranslationLang();
 
 const ruleForm = reactive({
-  username: "admin",
-  password: "admin123",
-  verifyCode: ""
+  username: "shenlingadmin",
+  password: "123456",
+  verifyCode: "",
 });
 
 const onLogin = async (formEl: FormInstance | undefined) => {
   if (!formEl) return;
-  await formEl.validate(valid => {
+  await formEl.validate((valid) => {
     if (valid) {
       loading.value = true;
+      // 获取 slVerifyKey
+      const slVerifyKey = JSON.parse(localStorage.getItem("slVerifyKey") || "");
       useUserStoreHook()
-        .loginByUsername({ username: ruleForm.username, password: "admin123" })
-        .then(res => {
-          if (res.success) {
+        .loginByUsername({
+          account: ruleForm.username,
+          password: ruleForm.password,
+          code: ruleForm.verifyCode,
+          key: slVerifyKey,
+        })
+        .then((res) => {
+          if (res.code==200) {
             // 获取后端路由
             return initRouter().then(() => {
               disabled.value = true;
@@ -91,9 +99,9 @@ const onLogin = async (formEl: FormInstance | undefined) => {
 };
 
 const immediateDebounce: any = debounce(
-  formRef => onLogin(formRef),
+  (formRef) => onLogin(formRef),
   1000,
-  true
+  true,
 );
 
 useEventListener(document, "keypress", ({ code }) => {
@@ -105,13 +113,13 @@ useEventListener(document, "keypress", ({ code }) => {
     immediateDebounce(ruleFormRef.value);
 });
 
-watch(imgCode, value => {
+watch(imgCode, (value) => {
   useUserStoreHook().SET_VERIFYCODE(value);
 });
-watch(checked, bool => {
+watch(checked, (bool) => {
   useUserStoreHook().SET_ISREMEMBERED(bool);
 });
-watch(loginDay, value => {
+watch(loginDay, (value) => {
   useUserStoreHook().SET_LOGINDAY(value);
 });
 </script>
@@ -189,8 +197,8 @@ watch(loginDay, value => {
                   {
                     required: true,
                     message: transformI18n($t('login.pureUsernameReg')),
-                    trigger: 'blur'
-                  }
+                    trigger: 'blur',
+                  },
                 ]"
                 prop="username"
               >
@@ -241,7 +249,7 @@ watch(loginDay, value => {
                           width: loginDay < 10 ? '10px' : '16px',
                           outline: 'none',
                           background: 'none',
-                          appearance: 'none'
+                          appearance: 'none',
                         }"
                       >
                         <option value="1">1</option>
@@ -252,7 +260,7 @@ watch(loginDay, value => {
                       <IconifyIconOffline
                         v-tippy="{
                           content: t('login.pureRememberInfo'),
-                          placement: 'top'
+                          placement: 'top',
                         }"
                         :icon="Info"
                         class="ml-1"

@@ -78,10 +78,10 @@ export const useUserStore = defineStore({
     },
     /** 登入 */
     async loginByUsername(data) {
-      return new Promise<UserResult>((resolve, reject) => {
+      return new Promise<UserResult>((resolve, reject) => { 
         getLogin(data)
           .then(data => {
-            if (data?.success) setToken(data.data);
+            if (data?.code === 200) setToken(data.data.token.token);
             resolve(data);
           })
           .catch(error => {
