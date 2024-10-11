@@ -2,7 +2,7 @@ import { storeToRefs } from "pinia";
 import { getConfig } from "@/config";
 import { useRouter } from "vue-router";
 import { emitter } from "@/utils/mitt";
-import Avatar from "@/assets/user.jpg";
+// import Avatar from "@/assets/user.jpg";
 import { getTopMenu } from "@/router/utils";
 import { useFullscreen } from "@vueuse/core";
 import type { routeMetaType } from "../types";
@@ -19,6 +19,7 @@ import Fullscreen from "@iconify-icons/ri/fullscreen-fill";
 
 const errorInfo =
   "The current routing configuration is incorrect, please check the configuration";
+const Avatar = "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif";
 
 export function useNav() {
   const pureApp = useAppStoreHook();

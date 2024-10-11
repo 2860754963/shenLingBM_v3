@@ -77,24 +77,28 @@ export const useUserStore = defineStore({
       this.loginDay = Number(value);
     },
     /** 登入 */
-    async loginByUsername(data) {
+    async loginByUsername(data) {  
       return new Promise<UserResult>((resolve, reject) => { 
         getLogin(data)
           .then(data => {
-            console.log("🚀 ~ loginByUsername ~ data:", data)
-            let usertokenobj = {
-              token: data.data.token.token,
-              accessToken: data.data.token.token,
-              expires: data.data.token.expire,
-              refreshToken: data.data.token.token,
-              ...data.data.user
+            if (data.code === 200) {
+              let usertokenobj = {
+                token: data.data.token.token,
+                accessToken: data.data.token.token,
+                expires: data.data.token.expire,
+                refreshToken: data.data.token.token,
+                ...data.data.user
+              }
+              setToken(usertokenobj);
+              resolve(data);
+            } else { 
+              reject(data);
             }
-            if (data?.code === 200) setToken(usertokenobj);
-            resolve(data);
           })
           .catch(error => {
             reject(error);
           });
+           
       });
        
     },

@@ -78,7 +78,7 @@ const onLogin = async (formEl: FormInstance | undefined) => {
           key: slVerifyKey,
         })
         .then((res) => {
-          if (res.code==200) {
+          if (res.code === 200) {
             // 获取后端路由
             return initRouter().then(() => {
               disabled.value = true;
@@ -89,9 +89,10 @@ const onLogin = async (formEl: FormInstance | undefined) => {
                 })
                 .finally(() => (disabled.value = false));
             });
-          } else {
-            message(t("login.pureLoginFail"), { type: "error" });
           }
+        })
+        .catch((err) => {
+          message(err.msg, { type: "error" });
         })
         .finally(() => (loading.value = false));
     }
