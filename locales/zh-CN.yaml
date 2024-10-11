@@ -62,17 +62,50 @@ panel:
   pureHiddenFooter: 隐藏页脚
   pureMultiTagsCache: 页签持久化
 menus:
-  # slbm
-  slbmDashboard: 工作台
+  # slbm 开始
+  slbmDashboard: slbm工作台
   # 基础数据管理
-  slbmBaseData: 基础数据管理
+  slbmBaseData: slbm基础数据管理
   # 机构管理
   slbmInstitution: 机构管理
   # 机构作业范围
   slbmInstitutionWorkRange: 机构作业范围
   # 运费管理
   slbmFreight: 运费管理
-  # slbm
+  # 车辆管理
+  slbmVehicle: slbm车辆管理
+  # 车型管理
+  slbmVehicleType: 车型管理
+  # 车辆列表
+  slbmVehicleList: 车辆列表
+  # 车辆登记
+  slbmVehicleRegister: 车辆登记
+  # 员工管理
+  slbmEmployee: slbm员工管理
+  # 快递员管理
+  slbmCourier: 快递员管理
+  # 司机管理
+  slbmDriver: 司机管理
+  # 排班管理
+  slbmScheduling: 排班管理
+  # 业务管理
+  slbmBusiness: slbm业务管理
+# 订单管理
+  slbmOrder: 订单管理
+  # 运单管理
+  slbmWaybill: 运单管理
+  # 调度管理
+  slbmDispatch: slbm调度管理
+  # 运输任务管理
+  slbmTransportTask: 运输任务管理
+  # 线路管理
+  slbmLine: 线路管理
+  # 取件作业管理
+  slbmPickup: 取件作业管理
+  # 派件作业管理
+  slbmDelivery: 派件作业管理
+  # slbm 结束
+
   pureHome: 首页
   pureLogin: 登录
   pureEmpty: 无Layout页

@@ -81,13 +81,22 @@ export const useUserStore = defineStore({
       return new Promise<UserResult>((resolve, reject) => { 
         getLogin(data)
           .then(data => {
-            if (data?.code === 200) setToken(data.data.token);
+            console.log("🚀 ~ loginByUsername ~ data:", data)
+            let usertokenobj = {
+              token: data.data.token.token,
+              accessToken: data.data.token.token,
+              expires: data.data.token.expire,
+              refreshToken: data.data.token.token,
+              ...data.data.user
+            }
+            if (data?.code === 200) setToken(usertokenobj);
             resolve(data);
           })
           .catch(error => {
             reject(error);
           });
       });
+       
     },
     /** 前端登出（不调用接口） */
     logOut() {
@@ -101,6 +110,7 @@ export const useUserStore = defineStore({
     },
     /** 刷新`token` */
     async handRefreshToken(data) {
+      console.log("🚀 ~ handRefreshToken ~ data:", data)
       return new Promise<RefreshTokenResult>((resolve, reject) => {
         refreshTokenApi(data)
           .then(data => {

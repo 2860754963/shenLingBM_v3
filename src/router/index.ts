@@ -38,7 +38,7 @@ import {
  */
 const modules: Record<string, any> = import.meta.glob(
   // 
-  ["./modules/**/*.ts", "!./modules/**/remaining.ts","./slmodules/**/*.ts"], //slbm  进行本地神领路由模块的导入匹配
+  ["./modules/**/*.ts", "!./modules/**/remaining.ts","./slmodules/**/*.ts"], //slbm  进行本地神领路由模块的导入匹配 
   {
     eager: true
   }

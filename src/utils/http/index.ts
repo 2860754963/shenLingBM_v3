@@ -15,7 +15,6 @@ import { getToken, formatToken } from "@/utils/auth";
 import { useUserStoreHook } from "@/store/modules/user";
 
 //  const data = getToken();
-//  console.log("🚀 ~ data:", data)
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
   // 请求超时时间
@@ -77,16 +76,15 @@ class PureHttp {
           return config;
         }
         /** 请求白名单，放置一些不需要`token`的接口（通过设置请求白名单，防止`token`过期后再请求造成的死循环问题） */
-        const whiteList = ["/refresh-token", "/login"];
+        const whiteList = ["/refresh-token", "/login"];//"/refresh-token",
         return whiteList.some(url => config.url.endsWith(url))
           ? config
           : new Promise(resolve => {
               const data = getToken();
-              console.log("🚀 ~ PureHttp ~ data:", data)
             if (data) {
                 //  config.headers["Authorization"] = data.accessToken;
-                const now = new Date().getTime();
-                const expired = parseInt(data.expires) - now <= 0;
+                // const now = new Date().getTime(); - now
+                const expired = parseInt(data.expires)  <= 0; //slbm 过期时间戳 ，这里后端返回一直存在有值，所以不会过期
                 if (expired) {
                   if (!PureHttp.isRefreshing) {
                     PureHttp.isRefreshing = true;

@@ -1,5 +1,5 @@
 import { $t } from "@/plugins/i18n";
-import { basedatamanage } from "@/router/enums";
+import { dashboard } from "@/router/enums";
 
 export default {
   path: "/dashboard",
@@ -7,13 +7,13 @@ export default {
   meta: {
       icon: "ri:file-info-line",
     title: $t("menus.slbmDashboard"),
-    rank: basedatamanage
+    rank: dashboard
   },
   children: [
     {
       path: "/dashboard/index",
       name: "dashboard",
-      component: () => import("@/views/dashboard/index.vue"),
+      component: () => import("@/views/aslbm/dashboard/index.vue"),
       meta: {
         title: $t("menus.slbmDashboard"),
         // showParent: true

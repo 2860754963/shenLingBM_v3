@@ -46,19 +46,16 @@ export function getToken(): DataInfo<number> {
  * 将`avatar`、`username`、`nickname`、`roles`、`permissions`、`refreshToken`、`expires`这七条信息放在key值为`user-info`的localStorage里（利用`multipleTabsKey`当浏览器完全关闭后自动销毁）
  */
 export function setToken(data) {
-  console.log("🚀 ~ setToken ~ data:", data)
   let expires = 0;
-  const {token:accessToken, refreshToken } = data; 
-  const { isRemembered, loginDay } = useUserStoreHook();
+  const {accessToken, refreshToken } = data; 
+  const { isRemembered, loginDay } = useUserStoreHook(); 
   expires = data.expires; // 如果后端直接设置时间戳，将此处代码改为expires = data.expires，然后把上面的DataInfo<Date>改成DataInfo<number>即可
   const cookieString = JSON.stringify({ accessToken, expires, refreshToken });
-
-  expires > 0
-    ? Cookies.set(TokenKey, cookieString, {
-        expires: (expires - Date.now()) / 86400000
-      })
-    : Cookies.set(TokenKey, cookieString);
-
+  expires > 0? Cookies.set(TokenKey, cookieString, {
+         // expires: (expires - Date.now()) / 86400000
+         expires:expires
+       }) : Cookies.set(TokenKey, cookieString);
+    // Cookies.set(TokenKey, cookieString);
   Cookies.set(
     multipleTabsKey,
     "true",

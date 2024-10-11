@@ -99,12 +99,11 @@ type ResultTable = {
 /** 登录 */
 export const getLogin = (data?: object) => {
   console.log('进登陆借口');
-  
-  return http.request<UserResult>("post", "/manager/login", { data });
+  return http.request<UserResult>("post", "/slbma/manager/login", { data });
 };
 
 /** 刷新`token` */
-export const refreshTokenApi = (data?: object) => {
+export const refreshTokenApi = (data?: object) => { //暂未用到
   return http.request<RefreshTokenResult>("post", "/refresh-token", { data });
 };
 
