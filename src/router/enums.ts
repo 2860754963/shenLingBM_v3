@@ -13,7 +13,7 @@ const home = 0, // 平台规定只有 home 路由的 rank 才能为 0 ，所以�
   frame = 10,
   nested = 11,
   permission = 12,
-  system = 13,
+  system = 26,
   monitor = 14,
   tabs = 15,
   about = 16,
@@ -24,8 +24,10 @@ const home = 0, // 平台规定只有 home 路由的 rank 才能为 0 ，所以�
   ppt = 21,
   mind = 22,
   guide = 23,
-  menuoverflow = 24;
-
+  menuoverflow = 24,
+  welcome = 25,
+  dashboard = 27,
+  basedatamanage = 28
 export {
   home,
   vueflow,
@@ -51,5 +53,8 @@ export {
   ppt,
   mind,
   guide,
-  menuoverflow
+  menuoverflow,
+  welcome,
+  dashboard,
+  basedatamanage
 };

@@ -29,6 +29,27 @@ const modulesRoutes = import.meta.glob("/src/views/**/*.{vue,tsx}");
 // 动态路由
 import { getAsyncRoutes } from "@/api/routes";
 
+// 转换函数
+function handleSLrouters(data) {
+  return data.map(item => {
+    const newItem:any = {
+      path: item.path,
+      name: item.name,
+      meta: {
+        title: item.meta.title,
+        roles: ["admin", "common"], // 根据需求，添加默认的roles
+        icon: item.meta.icon || "", 
+        breadcrumb: item.meta.breadcrumb || false
+      }
+    };
+    if (item.children && item.children.length > 0) {
+      newItem.children = handleSLrouters(item.children);
+    }
+
+    return newItem;
+  });
+}
+
 function handRank(routeInfo: any) {
   const { name, path, parentId, meta } = routeInfo;
   return isAllEmpty(parentId)
@@ -151,6 +172,7 @@ function addPathMatch() {
 
 /** 处理动态路由（后端返回的路由） */
 function handleAsyncRoutes(routeList) {
+  console.log("🚀 ~ handleAsyncRoutes ~ routeList:", JSON.stringify(routeList))
   if (routeList.length === 0) {
     usePermissionStoreHook().handleWholeMenus(routeList);
   } else {
@@ -203,6 +225,7 @@ function initRouter() {
     } else {
       return new Promise(resolve => {
         getAsyncRoutes().then(({ data }) => {
+           data=handleSLrouters(data)
           handleAsyncRoutes(cloneDeep(data));
           storageLocal().setItem(key, data);
           resolve(router);
@@ -212,6 +235,7 @@ function initRouter() {
   } else {
     return new Promise(resolve => {
       getAsyncRoutes().then(({ data }) => {
+        data=handleSLrouters(data)
         handleAsyncRoutes(cloneDeep(data));
         resolve(router);
       });
@@ -300,8 +324,11 @@ function handleAliveRoute({ name }: ToRouteType, mode?: string) {
 
 /** 过滤后端传来的动态路由 重新生成规范路由 */
 function addAsyncRoutes(arrRoutes: Array<RouteRecordRaw>) {
+
   if (!arrRoutes || !arrRoutes.length) return;
+  //slbm  在这里拿到本地 代码文件的路径
   const modulesRoutesKeys = Object.keys(modulesRoutes);
+  // console.log("🚀 ~ addAsyncRoutes ~ modulesRoutesKeys:", modulesRoutesKeys)
   arrRoutes.forEach((v: RouteRecordRaw) => {
     // 将backstage属性加入meta，标识此路由为后端返回路由
     v.meta.backstage = true;

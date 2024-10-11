@@ -37,7 +37,8 @@ import {
  * 如何排除文件请看：https://cn.vitejs.dev/guide/features.html#negative-patterns
  */
 const modules: Record<string, any> = import.meta.glob(
-  ["./modules/**/*.ts", "!./modules/**/remaining.ts"],
+  // 
+  ["./modules/**/*.ts", "!./modules/**/remaining.ts","./slmodules/**/*.ts"], //slbm  进行本地神领路由模块的导入匹配
   {
     eager: true
   }
@@ -102,7 +103,7 @@ export function resetRouter() {
 }
 
 /** 路由白名单 */
-const whiteList = ["/login"];
+const whiteList = ["/login"]; 
 
 const { VITE_HIDE_HOME } = import.meta.env;
 

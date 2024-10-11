@@ -62,6 +62,17 @@ panel:
   pureHiddenFooter: 隐藏页脚
   pureMultiTagsCache: 页签持久化
 menus:
+  # slbm
+  slbmDashboard: 工作台
+  # 基础数据管理
+  slbmBaseData: 基础数据管理
+  # 机构管理
+  slbmInstitution: 机构管理
+  # 机构作业范围
+  slbmInstitutionWorkRange: 机构作业范围
+  # 运费管理
+  slbmFreight: 运费管理
+  # slbm
   pureHome: 首页
   pureLogin: 登录
   pureEmpty: 无Layout页
@@ -185,6 +196,9 @@ menus:
   pureMindMap: 思维导图
   pureMenuOverflow: 目录超出显示 Tooltip 文字提示
   pureChildMenuOverflow: 菜单超出显示 Tooltip 文字提示
+  welcome: 欢迎
+  pureWelcome: 欢迎页
+  pureWelcomeTip: 欢迎使用vue-pure-admin，这里是您的主页，您可以开始您的工作之旅。
 status:
   pureLoad: 加载中...
   pureMessage: 消息

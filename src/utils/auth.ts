@@ -22,7 +22,7 @@ export interface DataInfo<T> {
 }
 
 export const userKey = "user-info";
-export const TokenKey = "authorized-token";
+export const TokenKey = "authorized-token"; 
 /**
  * 通过`multiple-tabs`是否在`cookie`中，判断用户是否已经登录系统，
  * 从而支持多标签页打开已经登录的系统后无需再登录。
@@ -46,10 +46,11 @@ export function getToken(): DataInfo<number> {
  * 将`avatar`、`username`、`nickname`、`roles`、`permissions`、`refreshToken`、`expires`这七条信息放在key值为`user-info`的localStorage里（利用`multipleTabsKey`当浏览器完全关闭后自动销毁）
  */
 export function setToken(data) {
+  console.log("🚀 ~ setToken ~ data:", data)
   let expires = 0;
-  const { accessToken, refreshToken } = data;
+  const {token:accessToken, refreshToken } = data; 
   const { isRemembered, loginDay } = useUserStoreHook();
-  expires = new Date(data.expires).getTime(); // 如果后端直接设置时间戳，将此处代码改为expires = data.expires，然后把上面的DataInfo<Date>改成DataInfo<number>即可
+  expires = data.expires; // 如果后端直接设置时间戳，将此处代码改为expires = data.expires，然后把上面的DataInfo<Date>改成DataInfo<number>即可
   const cookieString = JSON.stringify({ accessToken, expires, refreshToken });
 
   expires > 0
@@ -124,7 +125,8 @@ export function removeToken() {
 
 /** 格式化token（jwt格式） */
 export const formatToken = (token: string): string => {
-  return "Bearer " + token;
+  // "Bearer "  +    slbm
+  return token;
 };
 
 /** 是否有按钮级别的权限（根据登录接口返回的`permissions`字段进行判断）*/
