@@ -9,6 +9,7 @@
     "url": "https://github.com/2860754963"
   },
   "scripts": {
+    "postinstall": "npm install -g pnpm",
     "pinstall": "pnpm install",
     "dev": "NODE_OPTIONS=--max-old-space-size=4096 vite",
     "serve": "pnpm dev",
