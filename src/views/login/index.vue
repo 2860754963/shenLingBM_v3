@@ -360,7 +360,7 @@ watch(loginDay, (value) => {
       "
     >
       <a
-        href="https://beian.mps.gov.cn/#/query/webSearch?code=00000000000000"
+        href="https://beian.mps.gov.cn/#/query/webSearch?code=2024042783"
         target="_blank"
         style="text-decoration: none"
         rel="noopener"
