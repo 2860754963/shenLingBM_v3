@@ -82,6 +82,7 @@ declare global {
    * @see {@link https://pure-admin.github.io/pure-admin-doc/pages/config/#platform-config-json}
    */
   interface PlatformConfigs {
+    [x: string]: any;
     Version?: string;
     Title?: string;
     FixedHeader?: boolean;
@@ -125,6 +126,7 @@ declare global {
   interface StorageConfigs {
     version?: string;
     title?: string;
+    icp?: string;
     fixedHeader?: boolean;
     hiddenSideBar?: boolean;
     multiTagsCache?: boolean;

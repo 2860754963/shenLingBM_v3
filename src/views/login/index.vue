@@ -54,7 +54,7 @@ const { initStorage } = useLayout();
 initStorage();
 const { dataTheme, overallStyle, dataThemeChange } = useDataThemeChange();
 dataThemeChange(overallStyle.value);
-const { title, getDropdownItemStyle, getDropdownItemClass } = useNav();
+const { title, getDropdownItemStyle, getDropdownItemClass, icp } = useNav();
 const { locale, translationCh, translationEn } = useTranslationLang();
 
 const ruleForm = reactive({
@@ -345,11 +345,42 @@ watch(loginDay, (value) => {
       Copyright © 2020-present
       <a
         class="hover:text-primary"
-        href="https://github.com/pure-admin"
+        href="https://github.com/2860754963/shenLingBM_v3"
         target="_blank"
       >
         &nbsp;{{ title }}
       </a>
+    </div>
+    <div
+      style="
+        width: 300px;
+        margin: 0 auto;
+        text-align: center;
+        white-space: nowrap;
+      "
+    >
+      <a
+        href="https://beian.mps.gov.cn/#/query/webSearch?code=00000000000000"
+        target="_blank"
+        style="text-decoration: none"
+        rel="noopener"
+      >
+        <!-- <img src="" style="width:16px;height:16px;vertical-align:middle;"> -->
+        <span style="color: #939393; font-size: 12px; vertical-align: middle">{{
+          icp
+        }}</span>
+      </a>
+
+      <!-- <a
+        href="https://beian.miit.gov.cn/"
+        target="_blank"
+        style="text-decoration: none"
+        rel="noopener"
+      >
+        <span style="color: #939393; font-size: 12px; vertical-align: middle">{{
+          icp
+        }}</span>
+      </a> -->
     </div>
   </div>
 </template>

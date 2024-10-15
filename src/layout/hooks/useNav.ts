@@ -1,5 +1,5 @@
 import { storeToRefs } from "pinia";
-import { getConfig } from "@/config";
+import { getConfig } from "@/config"; 
 import { useRouter } from "vue-router";
 import { emitter } from "@/utils/mitt";
 // import Avatar from "@/assets/user.jpg";
@@ -90,6 +90,9 @@ export function useNav() {
   const title = computed(() => {
     return $config.Title;
   });
+  const icp=computed(()=> {
+    return $config.ICP;
+  })
 
   /** 动态title */
   function changeTitle(meta: routeMetaType) {
@@ -151,6 +154,7 @@ export function useNav() {
 
   return {
     title,
+    icp,
     device,
     layout,
     logout,
