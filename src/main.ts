@@ -23,12 +23,14 @@ import "element-plus/dist/index.css";
 // 导入字体图标
 import "./assets/iconfont/iconfont.js";
 import "./assets/iconfont/iconfont.css";
-
+import * as echarts from "echarts";
+// 将echarts挂载到window上 用于 china.js 中使用
+window.echarts = echarts;
 const app = createApp(App);
 
 // 自定义指令
 import * as directives from "@/directives";
-Object.keys(directives).forEach(key => {
+Object.keys(directives).forEach((key) => {
   app.directive(key, (directives as { [key: string]: Directive })[key]);
 });
 
@@ -36,7 +38,7 @@ Object.keys(directives).forEach(key => {
 import {
   IconifyIconOffline,
   IconifyIconOnline,
-  FontIcon
+  FontIcon,
 } from "./components/ReIcon";
 app.component("IconifyIconOffline", IconifyIconOffline);
 app.component("IconifyIconOnline", IconifyIconOnline);
@@ -53,10 +55,10 @@ import "tippy.js/dist/tippy.css";
 import "tippy.js/themes/light.css";
 import VueTippy from "vue-tippy";
 app.use(VueTippy);
+app.config.globalProperties.$echarts = echarts;
+console.log(app, "app");
 
-console.log(app,"app");
-
-getPlatformConfig(app).then(async config => {
+getPlatformConfig(app).then(async (config) => {
   setupStore(app);
   app.use(router);
   await router.isReady();

@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive, nextTick } from "vue";
-import { getWorkspaceData } from "@/api/slbm/workspace";
+import {
+  getWorkspaceData,
+  getTransportTaskPageData,
+} from "@/api/slbm/workspace";
 import questionFilled from "@iconify-icons/ep/question-filled";
 import { commonFuc } from "./data";
 import { ChartBarLine } from "./components/charts";
 import { message } from "@/utils/message";
+import ChianMap from "./components/china-map/china-map.vue";
 defineOptions({
   name: "Dashboard",
 });
 let workspaceData = ref<any>({});
+let transportTaskPageData = ref<any>();
+const pureTableRef = ref(null);
 const getWorkspace = async () => {
   let res: any = await getWorkspaceData();
   if (res.code === 200) {
@@ -17,34 +23,107 @@ const getWorkspace = async () => {
   } else {
     message("获取信息失败！", { type: "error" });
   }
+  let params = {
+    assignedStatus: "",
+    endAgencyId: "",
+    id: "",
+    licensePlate: "",
+    loadingStatus: "",
+    page: 1,
+    pageSize: 10,
+    planArrivalTime: "",
+    startAgencyId: "",
+    status: "",
+    truckId: "",
+  };
+  let result: any = await getTransportTaskPageData(params);
+  console.log(result, "result");
+  if (result.code === 200) {
+    transportTaskPageData.value = result.data.items.map((item: any, index) => {
+      return {
+        id: item.id,
+        startAgency: item.startAgency.name,
+        endAgency: item.endAgency.name,
+        licensePlate: item.truck.licensePlate,
+        // 任务状态，1为待执行（对应 待提货）、2为进行中（对应在途）、3为待确认（保留状态）、4为已完成（对应 已交付）、5为已取消
+        status: (function checkStatus() {
+          switch (item.status) {
+            case 1:
+              return "待提货";
+              break;
+            case 2:
+              return "在途";
+              break;
+            case 3:
+              return "待确认";
+              break;
+            case 4:
+              return "已完成";
+              break;
+            case 5:
+              return "已取消";
+              break;
+
+            default:
+              break;
+          }
+        })(),
+      };
+    });
+    await nextTick();
+    autoScroll(true);
+  } else {
+    message("获取运输任务信息失败！", { type: "error" });
+  }
 };
 getWorkspace();
-let tableData = ref<any>();
+
 const columns = [
   {
     label: "任务编号",
-    prop: "date",
+    prop: "id",
   },
   {
     label: "起始地",
-    prop: "name",
+    prop: "startAgency",
   },
   {
     label: "目的地",
-    prop: "name",
+    prop: "endAgency",
   },
   {
     label: "车辆",
-    prop: "address",
+    prop: "licensePlate",
   },
   {
     label: "任务状态",
-    prop: "address",
+    prop: "status",
   },
 ];
-
-// const { backlog, orderLineChart, organOverview, todayData, transportTaskList } =
-// let organOverview: any = {};
+// 自动滚动函数
+const autoScroll = (stop) => {
+  let timer = null;
+  let elTableref = pureTableRef.value.getTableRef();
+  const divData = elTableref.$refs.bodyWrapper;
+  if (!stop) {
+    //  清除定时器
+    clearInterval(timer);
+  } else {
+    timer = setInterval(() => {
+      // elTableref.setScrollTop(1);
+      // if (divData.clientHeight + divData.scrollTop >= divData.scrollHeight) {
+      //   divData.scrollTop = 0;
+      //   elTableref.setScrollTop(0);
+      // }
+    }, 150);
+  }
+};
+onMounted(() => {
+  // setInterval(autoScroll, 15000); // 每50ms滚动一次
+});
+const handleScroll = (event) => {
+  console.log(event, "event");
+};
 </script>
 
 <template>
@@ -365,7 +444,9 @@ const columns = [
       >
         <el-card>
           <template #header> 线路管理 </template>
-          <div>chianMap</div>
+          <div class="h-[25em]">
+            <ChianMap />
+          </div>
         </el-card>
       </el-col>
       <el-col
@@ -385,12 +466,19 @@ const columns = [
           <template #header> 运输任务 </template>
           <div>
             <pure-table
+              id="puretableid"
+              ref="pureTableRef"
               :header-cell-style="{
                 background: 'var(--el-fill-color-light)',
                 color: 'var(--el-text-color-primary)',
               }"
-              :data="tableData"
+              :data="transportTaskPageData"
               :columns="columns"
+              height="100%"
+              class="h-[25em]"
+              @mouseenter="autoScroll(true)"
+              @mouseleave="autoScroll(false)"
+              @scroll="handleScroll"
             />
           </div>
         </el-card>

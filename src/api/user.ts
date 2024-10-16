@@ -6,30 +6,30 @@ export type UserResult = {
     token: {
       expire: number;
       token: string;
-    },
+    };
     user: {
-      id: string,
-      createUser: null,
-      updateUser: null,
-      superior: string,
-      account: string,
-      name: string,
-      orgId: string,
-      orgName: null,
-      stationId: string,
-      stationName: null,
-      email: null,
-      mobile: string,
+      id: string;
+      createUser: null;
+      updateUser: null;
+      superior: string;
+      account: string;
+      name: string;
+      orgId: string;
+      orgName: null;
+      stationId: string;
+      stationName: null;
+      email: null;
+      mobile: string;
       sex: {
-        des:string,
-        code:string 
-      },
-      status: Boolean,
-      avatar: string|null,
-      lastLoginTime: null,
-      roles: null,
-      roleNames: null
-    },
+        des: string;
+        code: string;
+      };
+      status: Boolean;
+      avatar: string | null;
+      lastLoginTime: null;
+      roles: null;
+      roleNames: null;
+    };
     // /** 头像 */
     // avatar: string;
     // /** 用户名 */
@@ -47,7 +47,7 @@ export type UserResult = {
     // /** `accessToken`的过期时间（格式'xxxx/xx/xx xx:xx:xx'） */
     // expires: Date;
   };
-   msg: string;
+  msg: string;
 };
 
 export type RefreshTokenResult = {
@@ -98,12 +98,14 @@ type ResultTable = {
 
 /** 登录 */
 export const getLogin = (data?: object) => {
-  console.log('进登陆借口');
+  console.log("进登陆借口");
+  // slbm
   return http.request<UserResult>("post", "/slbma/manager/login", { data });
 };
 
 /** 刷新`token` */
-export const refreshTokenApi = (data?: object) => { //暂未用到
+export const refreshTokenApi = (data?: object) => {
+  //暂未用到
   return http.request<RefreshTokenResult>("post", "/refresh-token", { data });
 };
 
