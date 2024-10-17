@@ -12,6 +12,7 @@ import { message } from "@/utils/message";
 import ChianMap from "./components/china-map/china-map.vue";
 import { debounce, throttle } from "@pureadmin/utils";
 import dayjs from "dayjs";
+import textMap from "./components/china-map/textMap.vue";
 defineOptions({
   name: "Dashboard",
 });
@@ -156,6 +157,7 @@ const hanleRefreshChart = (payload) => {
 
 <template>
   <div>
+    <!-- <textMap /> -->
     <el-row :gutter="24" justify="space-around">
       <el-col
         :md="12"

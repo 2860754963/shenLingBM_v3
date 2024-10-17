@@ -1,19 +1,34 @@
 <script setup lang="ts">
-import { ref, nextTick, onMounted } from "vue";
-import * as echarts from "echarts";
+import { ref, nextTick, onMounted, computed } from "vue";
+import { china as geoChina } from "@esmjs/geo";
 import datas from "./data";
-import china from "./chinapricence.js";
+import chinaPricence from "./chinapricence.js";
+import { useDark, useECharts } from "@pureadmin/utils";
+import * as echarts from "echarts";
 
 defineOptions({
   name: "ChianMap",
+});
+// 兼容dark主题
+const { isDark } = useDark();
+let theme = computed(() => {
+  return isDark.value ? "dark" : "default";
+});
+const chartRef = ref();
+const { echarts: any, setOptions } = useECharts(chartRef, {
+  theme,
+});
+echarts.registerMap("china", {
+  geoJSON: geoChina,
+  specialAreas: {}, // 根据需要定义特殊区域
 });
 
 const convertData = (data) => {
   const res = [];
   for (let i = 0; i < data.length; i += 1) {
     const dataItem = data[i];
-    const fromCoord = china.getCoord(dataItem[0].name);
-    const toCoord = china.getCoord(dataItem[1].name);
+    const fromCoord = chinaPricence.getCoord(dataItem[0].name);
+    const toCoord = chinaPricence.getCoord(dataItem[1].name);
     if (fromCoord && toCoord) {
       res.push({
         fromName: dataItem[0].name,
@@ -57,7 +72,7 @@ const labels =
         }, [])
     : [];
 
-let mapOption = {
+let mapOption: any = {
   // backgroundColor: "#677487",
   legend: {
     show: false,
@@ -126,7 +141,7 @@ let mapOption = {
       data: labels.map((dataItem) => {
         return {
           name: dataItem.name,
-          value: china.getCoord(dataItem.name).concat([dataItem.value]),
+          value: chinaPricence.getCoord(dataItem.name).concat([dataItem.value]),
           values: dataItem.values,
           itemStyle: {
             normal: {
@@ -188,25 +203,26 @@ let mapOption = {
     },
   ],
 };
+setOptions(mapOption);
+// const initEcharts = () => {
+//   const mapDom = document.getElementById("mapDom");
+//   const myChart = echarts.init(mapDom);
+//   mapOption && myChart.setOption(mapOption);
+// };
 
-const initEcharts = () => {
-  const mapDom = document.getElementById("mapDom");
-  const myChart = echarts.init(mapDom);
-  mapOption && myChart.setOption(mapOption);
-};
 onMounted(() => {
-  import("./china.js")
-    .then((res) => {
-      initEcharts();
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  // import("./china.js")
+  //   .then((res) => {
+  //     initEcharts();
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });
 });
 </script>
 
 <template>
-  <div id="mapDom" class="h-full w-full" />
+  <div id="mapDom" ref="chartRef" class="h-full w-full" />
 </template>
 
 <style lang="scss" scoped></style>

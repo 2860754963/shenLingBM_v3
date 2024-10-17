@@ -24,9 +24,8 @@ import "element-plus/dist/index.css";
 import "./assets/iconfont/iconfont.js";
 import "./assets/iconfont/iconfont.css";
 import * as echarts from "echarts";
-// 将echarts挂载到window上 用于 china.js 中使用
-window.echarts = echarts;
 const app = createApp(App);
+app.config.globalProperties.$echarts = echarts;
 
 // 自定义指令
 import * as directives from "@/directives";
@@ -55,7 +54,7 @@ import "tippy.js/dist/tippy.css";
 import "tippy.js/themes/light.css";
 import VueTippy from "vue-tippy";
 app.use(VueTippy);
-app.config.globalProperties.$echarts = echarts;
+
 console.log(app, "app");
 
 getPlatformConfig(app).then(async (config) => {
