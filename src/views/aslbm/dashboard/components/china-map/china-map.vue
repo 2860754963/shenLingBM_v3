@@ -206,7 +206,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="mapDom" class="h-full w-full">test</div>
+  <div id="mapDom" class="h-full w-full" />
 </template>
 
 <style lang="scss" scoped></style>

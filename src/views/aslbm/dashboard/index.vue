@@ -5,21 +5,29 @@ import {
   getTransportTaskPageData,
 } from "@/api/slbm/workspace";
 import questionFilled from "@iconify-icons/ep/question-filled";
+import refresh from "@iconify-icons/ep/refresh";
 import { commonFuc } from "./data";
-import { ChartBarLine } from "./components/charts";
+import { OrderNumber, OrderDistribution } from "./components/charts";
 import { message } from "@/utils/message";
 import ChianMap from "./components/china-map/china-map.vue";
+import { debounce, throttle } from "@pureadmin/utils";
+import dayjs from "dayjs";
 defineOptions({
   name: "Dashboard",
 });
 let workspaceData = ref<any>({});
 let transportTaskPageData = ref<any>();
 const pureTableRef = ref(null);
+const orderNumberRef = ref(null);
+const orderDistributionRef = ref(null);
+let timer = ref(null);
+let scrollNumber = 0;
+let currentDate = ref(dayjs().format("YYYY-MM-DD HH:mm:ss"));
 const getWorkspace = async () => {
   let res: any = await getWorkspaceData();
   if (res.code === 200) {
     workspaceData.value = res.data;
-    console.log("🚀 ~ getWorkspace ~ workspaceData:", workspaceData);
+    message("获取信息成功！", { type: "success" });
   } else {
     message("获取信息失败！", { type: "error" });
   }
@@ -71,7 +79,8 @@ const getWorkspace = async () => {
       };
     });
     await nextTick();
-    autoScroll(true);
+    autoScroll(false);
+    message("获取运输任务信息成功！", { type: "success" });
   } else {
     message("获取运输任务信息失败！", { type: "error" });
   }
@@ -100,29 +109,48 @@ const columns = [
     prop: "status",
   },
 ];
-// 自动滚动函数
+
+// 平滑滚动
+let scrollAnimationFrame;
+const scrollSpeed = 0.2;
 const autoScroll = (stop) => {
-  let timer = null;
   let elTableref = pureTableRef.value.getTableRef();
-  const divData = elTableref.$refs.bodyWrapper;
-  if (!stop) {
-    //  清除定时器
-    clearInterval(timer);
+  let allheight = document.querySelector(
+    ".el-table__body-wrapper .el-scrollbar .el-scrollbar__wrap .el-scrollbar__view .el-table__body",
+  ).clientHeight;
+  let vieheight = document.querySelector(
+    ".el-card__body .el-table__body-wrapper",
+  ).clientHeight;
+  const smoothScroll = () => {
+    scrollNumber += scrollSpeed;
+    if (scrollNumber + vieheight >= allheight) {
+      scrollNumber = -1;
+      elTableref.setScrollTop(0);
+    } else {
+      elTableref.setScrollTop(scrollNumber);
+    }
+    scrollAnimationFrame = requestAnimationFrame(smoothScroll);
+  };
+  if (stop) {
+    if (scrollAnimationFrame) {
+      cancelAnimationFrame(scrollAnimationFrame);
+      scrollAnimationFrame = null;
+    }
   } else {
-    timer = setInterval(() => {
-      // elTableref.setScrollTop(1);
-      // if (divData.clientHeight + divData.scrollTop >= divData.scrollHeight) {
-      //   divData.scrollTop = 0;
-      //   elTableref.setScrollTop(0);
-      // }
-    }, 150);
+    if (!scrollAnimationFrame) {
+      smoothScroll();
+    }
   }
 };
-onMounted(() => {
-  // setInterval(autoScroll, 15000); // 每50ms滚动一次
-});
-const handleScroll = (event) => {
-  console.log(event, "event");
+
+const hanleRefresh = () => {
+  getWorkspace();
+  currentDate.value = dayjs().format("YYYY-MM-DD HH:mm:ss");
+};
+const hanleRefreshChart = (payload) => {
+  payload
+    ? orderNumberRef.value.refresh()
+    : orderDistributionRef.value.refresh();
 };
 </script>
 
@@ -209,7 +237,18 @@ const handleScroll = (event) => {
         class="mb-[.8em]"
       >
         <el-card>
-          <template #header> 今日数据 </template>
+          <template #header>
+            <div class="flex justify-between items-center">
+              <div>今日数据</div>
+              <div
+                class="flex items-center cursor-pointer"
+                @click="hanleRefresh"
+              >
+                <IconifyIconOffline :icon="refresh" class="mr-2" />
+                <div>{{ dayjs().format("YYYY-MM-DD HH:mm:ss") }}</div>
+              </div>
+            </div>
+          </template>
           <div class="flex justify-around pt-[1.6em] pb-[1.6em]">
             <div class="flex flex-col items-center">
               <div>订单金额(元)</div>
@@ -259,17 +298,26 @@ const handleScroll = (event) => {
       >
         <el-card>
           <template #header>
-            <div class="flex items-center">
-              待办任务
-              <el-tooltip effect="light">
-                <template #content>
-                  待取件率=待取件/(下单数量-取消数量)，且取件类型=上门取件<br />
-                  待派送率=待派送/(待派送+派送中+已签收+拒收)<br />
-                  未分配率=未分配/全部数据<br />
-                  超时率=超时任务/(已完成+进行中+已取消）<br />
-                </template>
-                <IconifyIconOffline :icon="questionFilled" class="ml-2" />
-              </el-tooltip>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div>待办任务</div>
+                <el-tooltip effect="light">
+                  <template #content>
+                    待取件率=待取件/(下单数量-取消数量)，且取件类型=上门取件<br />
+                    待派送率=待派送/(待派送+派送中+已签收+拒收)<br />
+                    未分配率=未分配/全部数据<br />
+                    超时率=超时任务/(已完成+进行中+已取消）<br />
+                  </template>
+                  <IconifyIconOffline :icon="questionFilled" class="ml-2" />
+                </el-tooltip>
+              </div>
+              <div
+                class="flex items-center cursor-pointer"
+                @click="hanleRefresh"
+              >
+                <IconifyIconOffline :icon="refresh" class="mr-2" />
+                <div>{{ currentDate }}</div>
+              </div>
             </div>
           </template>
           <div class="flex justify-around pt-5 pb-5">
@@ -349,15 +397,24 @@ const handleScroll = (event) => {
       >
         <el-card>
           <template #header>
-            <div class="flex items-center">
-              执行中任务
-              <el-tooltip effect="light">
-                <template #content>
-                  运输率=运输中/(全部订单-待取件-已取件-网点入库-待装车-已取消）<br />
-                  派送率=派送中/(待派送+派送中+已签收+拒收）
-                </template>
-                <IconifyIconOffline :icon="questionFilled" class="ml-2" />
-              </el-tooltip>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div>执行中任务</div>
+                <el-tooltip effect="light">
+                  <template #content>
+                    运输率=运输中/(全部订单-待取件-已取件-网点入库-待装车-已取消）<br />
+                    派送率=派送中/(待派送+派送中+已签收+拒收）
+                  </template>
+                  <IconifyIconOffline :icon="questionFilled" class="ml-2" />
+                </el-tooltip>
+              </div>
+              <div
+                class="flex items-center cursor-pointer"
+                @click="hanleRefresh"
+              >
+                <IconifyIconOffline :icon="refresh" class="mr-2" />
+                <div>{{ currentDate }}</div>
+              </div>
             </div>
           </template>
           <div class="flex justify-around pt-5 pb-5">
@@ -413,7 +470,6 @@ const handleScroll = (event) => {
           }"
           class="mb-[18px]"
         >
-          <!--    style="background-color: aqua" -->
           <el-card
             shadow="hover"
             style="background-color: #eceef1; border: none"
@@ -463,7 +519,20 @@ const handleScroll = (event) => {
         class="mb-[18px]"
       >
         <el-card>
-          <template #header> 运输任务 </template>
+          <template #header>
+            <div class="flex items-center justify-between">
+              <div>
+                <div>运输任务</div>
+              </div>
+              <div
+                class="flex items-center cursor-pointer"
+                @click="hanleRefresh"
+              >
+                <IconifyIconOffline :icon="refresh" class="mr-2" />
+                <div>{{ currentDate }}</div>
+              </div>
+            </div>
+          </template>
           <div>
             <pure-table
               id="puretableid"
@@ -476,9 +545,8 @@ const handleScroll = (event) => {
               :columns="columns"
               height="100%"
               class="h-[25em]"
-              @mouseenter="autoScroll(true)"
-              @mouseleave="autoScroll(false)"
-              @scroll="handleScroll"
+              @mouseenter.stop="autoScroll(true)"
+              @mouseleave.stop="autoScroll(false)"
             />
           </div>
         </el-card>
@@ -499,9 +567,22 @@ const handleScroll = (event) => {
         class="mb-[18px]"
       >
         <el-card>
-          <template #header> 订单总量 </template>
-          <div>
-            <ChartBarLine />
+          <template #header>
+            <div class="flex items-center justify-between">
+              <div>
+                <div>订单总量</div>
+              </div>
+              <div
+                class="flex items-center cursor-pointer"
+                @click="hanleRefreshChart(1)"
+              >
+                <IconifyIconOffline :icon="refresh" class="mr-2" />
+                <div>{{ currentDate }}</div>
+              </div>
+            </div>
+          </template>
+          <div class="h-[25em]">
+            <OrderNumber ref="orderNumberRef" />
           </div>
         </el-card>
       </el-col>
@@ -518,7 +599,25 @@ const handleScroll = (event) => {
         }"
         class="mb-[18px]"
       >
-        <el-card> <template #header> 订单分布 </template> 123</el-card>
+        <el-card>
+          <template #header>
+            <div class="flex items-center justify-between">
+              <div>
+                <div>订单分布</div>
+              </div>
+              <div
+                class="flex items-center cursor-pointer"
+                @click="hanleRefreshChart(0)"
+              >
+                <IconifyIconOffline :icon="refresh" class="mr-2" />
+                <div>{{ currentDate }}</div>
+              </div>
+            </div>
+          </template>
+          <div class="h-[25em]">
+            <OrderDistribution ref="orderDistributionRef" />
+          </div>
+        </el-card>
       </el-col>
     </el-row>
   </div>

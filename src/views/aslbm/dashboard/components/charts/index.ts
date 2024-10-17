@@ -1,2 +1,2 @@
-export { default as ChartBarLine } from "./chartbarline.vue";
-export { default as ChartPie } from "./orderdistribution.vue";
+export { default as OrderNumber } from "./ordernumber.vue";
+export { default as OrderDistribution } from "./orderdistribution.vue";
