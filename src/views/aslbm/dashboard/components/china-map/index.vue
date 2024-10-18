@@ -1,0 +1,207 @@
+<script setup lang="ts">
+import { ref, nextTick, onMounted } from "vue";
+import * as echarts from "echarts";
+import datas from "./data";
+import china from "./chinapricence.js";
+import chinaMap from "./china.json";
+import "./china.js";
+defineOptions({
+  name: "ChianMap",
+});
+
+const convertData = (data) => {
+  const res = [];
+  for (let i = 0; i < data.length; i += 1) {
+    const dataItem = data[i];
+    const fromCoord = china.getCoord(dataItem[0].name);
+    const toCoord = china.getCoord(dataItem[1].name);
+    if (fromCoord && toCoord) {
+      res.push({
+        fromName: dataItem[0].name,
+        toName: dataItem[1].name,
+        coords: [fromCoord, toCoord],
+        value: dataItem[1].value,
+      });
+    }
+  }
+  return res;
+};
+
+const labels =
+  datas.length > 0
+    ? datas
+        .reduce((a: any, b: any) => {
+          b[1].from = b[0].name;
+          if (a === 0) {
+            return [...b];
+          }
+          return [...a, ...b];
+        }, 0)
+        .reduce((a, b) => {
+          const index = a.findIndex((item) => item.name === b.name);
+          if (index >= 0) {
+            if (b.value) {
+              if (!a[index].values) {
+                a[index].values = [];
+              }
+              const v = !a[index].value ? 0 : a[index].value;
+              a[index].value = v + b.value;
+              a[index].values.push(b);
+            }
+            return a;
+          } else if (b.value) {
+            b.values = [];
+            b.values.push(JSON.parse(JSON.stringify(b)));
+          }
+          a.push(b);
+          return a;
+        }, [])
+    : [];
+
+let mapOption = {
+  // backgroundColor: "#677487",
+  legend: {
+    show: false,
+    orient: "vertical",
+    top: "bottom",
+    left: "right",
+    data: ["地点", "线路"],
+    textStyle: {
+      color: "#fff",
+    },
+  },
+  tooltip: {
+    trigger: "item",
+    formatter(params) {
+      if (params.data.values) {
+        return `${params.marker}总数:${params.value[2]}<br/>${params.data.values
+          .map((item) => `${item.from}->${params.name}:${item.value}`)
+          .join("<br />")}`;
+      }
+
+      return "";
+    },
+  },
+  geo: {
+    map: "china",
+    zoom: 1.2,
+    label: {
+      emphasis: {
+        show: false,
+      },
+    },
+    roam: true,
+    itemStyle: {
+      normal: {
+        areaColor: "#f2f6f9",
+        borderColor: "#404a59",
+      },
+      emphasis: {
+        areaColor: "#2a333d",
+      },
+    },
+  },
+  series: [
+    {
+      name: "地点",
+      type: "effectScatter",
+      coordinateSystem: "geo",
+      zlevel: 2,
+      rippleEffect: {
+        brushType: "stroke",
+      },
+      label: {
+        normal: {
+          show: true,
+          position: "right",
+          formatter: "{b}",
+        },
+      },
+      symbolSize: 5,
+      showEffectOn: "render",
+      itemStyle: {
+        normal: {
+          color: "#46bee9",
+        },
+      },
+      data: labels.map((dataItem) => {
+        return {
+          name: dataItem.name,
+          value: china.getCoord(dataItem.name).concat([dataItem.value]),
+          values: dataItem.values,
+          itemStyle: {
+            normal: {
+              color: !dataItem.value ? "#DEB887" : "#1e1e1e",
+            },
+          },
+        };
+      }),
+    },
+    {
+      name: "线路",
+      type: "lines",
+      coordinateSystem: "geo",
+      zlevel: 2,
+      large: true,
+      effect: {
+        show: true,
+        constantSpeed: 10,
+        symbol: "pin",
+        symbolSize: 8,
+        trailLength: 0,
+        color: "#49cddc",
+      },
+      lineStyle: {
+        normal: {
+          color: (params) => {
+            // 计算渐变线方向，出货地颜色为a,入货颜色为b
+            const b1 = params.data.coords[0][0] - params.data.coords[1][0] > 0;
+            const b2 = params.data.coords[0][1] - params.data.coords[1][1] > 0;
+            const x1 = b1 ? 1 : 0;
+            const y1 = b2 ? 0 : 1;
+            const x2 = b1 ? 0 : 1;
+            const y2 = b2 ? 1 : 0;
+            return {
+              type: "linear",
+              x: x1,
+              y: y1,
+              x2: x2,
+              y2: y2,
+              colorStops: [
+                {
+                  offset: 0,
+                  color: "#a1a2AA", // 0% 处的颜色
+                },
+                {
+                  offset: 1,
+                  color: "#3babae", // 100% 处的颜色
+                },
+              ],
+              globalCoord: false, // 缺省为 false
+            };
+          },
+          width: 1,
+          opacity: 0.4,
+          curveness: 0.1,
+        },
+      },
+      data: convertData(datas),
+    },
+  ],
+};
+
+const initEcharts = () => {
+  const mapDom = document.getElementById("mapDom");
+  const myChart = echarts.init(mapDom);
+  mapOption && myChart.setOption(mapOption);
+};
+onMounted(() => {
+  initEcharts();
+});
+</script>
+
+<template>
+  <div id="mapDom" class="h-full w-full" />
+</template>
+
+<style lang="scss" scoped></style>

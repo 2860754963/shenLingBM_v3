@@ -26,7 +26,7 @@ import "./assets/iconfont/iconfont.css";
 import * as echarts from "echarts";
 const app = createApp(App);
 app.config.globalProperties.$echarts = echarts;
-
+window.echarts = echarts;
 // 自定义指令
 import * as directives from "@/directives";
 Object.keys(directives).forEach((key) => {

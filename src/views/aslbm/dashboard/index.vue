@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, reactive, nextTick } from "vue";
+import { ref, onMounted, reactive, nextTick, computed } from "vue";
 import {
   getWorkspaceData,
   getTransportTaskPageData,
@@ -9,12 +9,26 @@ import refresh from "@iconify-icons/ep/refresh";
 import { commonFuc } from "./data";
 import { OrderNumber, OrderDistribution } from "./components/charts";
 import { message } from "@/utils/message";
-import ChianMap from "./components/china-map/china-map.vue";
+import ChianMap from "./components/china-map/index.vue";
 import { debounce, throttle } from "@pureadmin/utils";
 import dayjs from "dayjs";
 import textMap from "./components/china-map/textMap.vue";
+import { useDark, useECharts } from "@pureadmin/utils";
+import { ReNormalCountTo, ReboundCountTo } from "@/components/ReCountTo";
+import {
+  useRouter,
+  useRoute,
+  type LocationQueryRaw,
+  type RouteParamsRaw,
+} from "vue-router";
 defineOptions({
   name: "Dashboard",
+});
+
+// 兼容dark主题
+const { isDark } = useDark();
+let theme = computed(() => {
+  return isDark.value ? "dark" : "default";
 });
 let workspaceData = ref<any>({});
 let transportTaskPageData = ref<any>();
@@ -88,6 +102,14 @@ const getWorkspace = async () => {
 };
 getWorkspace();
 
+const getProgressColor = (percentage) => {
+  return percentage >= 80
+    ? "#67C23A"
+    : percentage >= 50
+      ? "#E6A23C"
+      : "#F56C6C";
+};
+
 const columns = [
   {
     label: "任务编号",
@@ -152,12 +174,24 @@ const hanleRefreshChart = (payload) => {
   payload
     ? orderNumberRef.value.refresh()
     : orderDistributionRef.value.refresh();
+
+  currentDate.value = dayjs().format("YYYY-MM-DD HH:mm:ss");
+};
+const router = useRouter();
+const route = useRoute();
+const query = route.query as LocationQueryRaw;
+const params = route.params as RouteParamsRaw;
+const gopage = (name) => {
+  router.push({
+    name,
+  });
 };
 </script>
 
 <template>
   <div>
     <!-- <textMap /> -->
+
     <el-row :gutter="24" justify="space-around">
       <el-col
         :md="12"
@@ -184,8 +218,8 @@ const hanleRefreshChart = (payload) => {
                 >
               </div>
               <div class="mb-6">
-                <span
-                  >负责人：{{
+                <span>
+                  负责人：{{
                     workspaceData?.organOverview?.principal || "暂无"
                   }}</span
                 >
@@ -196,28 +230,54 @@ const hanleRefreshChart = (payload) => {
               <div class="flex w-full justify-around">
                 <div class="flex flex-col items-center mb-5">
                   <div class="mb-2">分拣中心(个)</div>
-                  <div class="text-[2em]">
-                    {{ workspaceData?.organOverview?.sortingCenterNumber || 0 }}
+                  <div>
+                    <ReNormalCountTo
+                      :duration="3000"
+                      :fontSize="'2em'"
+                      :startVal="0"
+                      :endVal="
+                        workspaceData?.organOverview?.sortingCenterNumber
+                      "
+                    />
+                    <!-- {{ workspaceData?.organOverview?.sortingCenterNumber || 0 }} -->
                   </div>
                 </div>
                 <div class="flex flex-col items-center mb-5">
                   <div class="mb-2">营业部(个)</div>
-                  <div class="text-[2em]">
-                    {{ workspaceData?.organOverview?.agencyNumber || 0 }}
+                  <div>
+                    <ReNormalCountTo
+                      :duration="3000"
+                      :fontSize="'2em'"
+                      :startVal="0"
+                      :endVal="workspaceData?.organOverview?.agencyNumber"
+                    />
+                    <!-- {{ workspaceData?.organOverview?.agencyNumber || 0 }} -->
                   </div>
                 </div>
               </div>
               <div class="flex w-full justify-around">
                 <div class="flex flex-col items-center">
                   <div class="mb-2">司机人数(个)</div>
-                  <div class="text-[2em]">
-                    {{ workspaceData?.organOverview?.driverNumber || 0 }}
+                  <div>
+                    <ReNormalCountTo
+                      :duration="3000"
+                      :fontSize="'2em'"
+                      :startVal="0"
+                      :endVal="workspaceData?.organOverview?.driverNumber"
+                    />
+                    <!-- {{ workspaceData?.organOverview?.driverNumber || 0 }} -->
                   </div>
                 </div>
                 <div class="flex flex-col items-center">
                   <div class="mb-2">快递员人数(个)</div>
-                  <div class="text-[2em]">
-                    {{ workspaceData?.organOverview?.courierNumber || 0 }}
+                  <div>
+                    <ReNormalCountTo
+                      :duration="3000"
+                      :fontSize="'2em'"
+                      :startVal="0"
+                      :endVal="workspaceData?.organOverview?.courierNumber"
+                    />
+                    <!-- {{ workspaceData?.organOverview?.courierNumber || 0 }} -->
                   </div>
                 </div>
               </div>
@@ -254,30 +314,65 @@ const hanleRefreshChart = (payload) => {
           <div class="flex justify-around pt-[1.6em] pb-[1.6em]">
             <div class="flex flex-col items-center">
               <div>订单金额(元)</div>
-              <div class="mt-4 mb-4 text-[2em]">
-                {{ workspaceData?.todayData?.orderAmount || 0 }}
+              <div class="mt-4 mb-4">
+                <ReNormalCountTo
+                  :duration="3000"
+                  :fontSize="'2em'"
+                  :startVal="0"
+                  :endVal="workspaceData?.todayData?.orderAmount"
+                />
+                <!-- {{ workspaceData?.todayData?.orderAmount || 0 }} -->
               </div>
               <div>
-                较昨日 {{ workspaceData?.todayData?.orderAmountChanges || 0 }}
+                较昨日
+                <ReNormalCountTo
+                  :duration="3000"
+                  :startVal="0"
+                  :endVal="workspaceData?.todayData?.orderAmountChanges"
+                />
+                <!-- {{ workspaceData?.todayData?.orderAmountChanges || 0 }} -->
               </div>
             </div>
             <div class="flex flex-col items-center">
               <div>订单数量(笔)</div>
-              <div class="mt-4 mb-4 text-[2em]">
-                {{ workspaceData?.todayData?.orderNumber || 0 }}
+              <div class="mt-4 mb-4">
+                <ReNormalCountTo
+                  :duration="3000"
+                  :fontSize="'2em'"
+                  :startVal="0"
+                  :endVal="workspaceData?.todayData?.orderNumber"
+                />
+                <!-- {{ workspaceData?.todayData?.orderNumber || 0 }} -->
               </div>
               <div>
-                较昨日 {{ workspaceData?.todayData?.orderNumberChanges || 0 }}
+                较昨日
+                <ReNormalCountTo
+                  :duration="3000"
+                  :startVal="0"
+                  :endVal="workspaceData?.todayData?.orderNumberChanges"
+                />
+                <!-- {{ workspaceData?.todayData?.orderNumberChanges || 0 }} -->
               </div>
             </div>
             <div class="flex flex-col items-center">
               <div>运输任务(次)</div>
-              <div class="mt-4 mb-4 text-[2em]">
-                {{ workspaceData?.todayData?.transportTaskNumber || 0 }}
+              <div class="mt-4 mb-4">
+                <ReNormalCountTo
+                  :duration="3000"
+                  :fontSize="'2em'"
+                  :startVal="0"
+                  :endVal="workspaceData?.todayData?.transportTaskNumber"
+                />
+                <!-- {{ workspaceData?.todayData?.transportTaskNumber || 0 }} -->
               </div>
               <div>
                 较昨日
-                {{ workspaceData?.todayData?.transportTaskNumberChanges || 0 }}
+                <ReNormalCountTo
+                  :duration="3000"
+                  :startVal="0"
+                  :endVal="workspaceData?.todayData?.transportTaskNumberChanges"
+                />
+                <!-- {{ workspaceData?.todayData?.transportTaskNumberChanges || 0 }} -->
               </div>
             </div>
           </div>
@@ -328,13 +423,21 @@ const hanleRefreshChart = (payload) => {
                 <el-progress
                   type="circle"
                   :percentage="workspaceData?.backlog?.waitingPickupRate"
+                  :color="
+                    getProgressColor(workspaceData?.backlog?.waitingPickupRate)
+                  "
                 />
               </div>
               <div class="text-center mt-[.5em]">
                 <span class="mr-1">待取件</span>
                 <span>
-                  {{ workspaceData?.backlog?.waitingPickupNumber || 0 }}</span
-                >
+                  <ReNormalCountTo
+                    :duration="3000"
+                    :startVal="0"
+                    :endVal="workspaceData?.backlog?.waitingPickupNumber"
+                  />
+                  <!-- {{ workspaceData?.backlog?.waitingPickupNumber || 0 }} -->
+                </span>
               </div>
             </div>
             <div>
@@ -342,13 +445,23 @@ const hanleRefreshChart = (payload) => {
                 <el-progress
                   type="circle"
                   :percentage="workspaceData?.backlog?.waitingDispatchRate"
+                  :color="
+                    getProgressColor(
+                      workspaceData?.backlog?.waitingDispatchRate,
+                    )
+                  "
                 />
               </div>
               <div class="text-center mt-[.5em]">
                 <span class="mr-1">待派件</span>
                 <span>
-                  {{ workspaceData?.backlog?.waitingDispatchNumber || 0 }}</span
-                >
+                  <ReNormalCountTo
+                    :duration="3000"
+                    :startVal="0"
+                    :endVal="workspaceData?.backlog?.waitingDispatchNumber"
+                  />
+                  <!-- {{ workspaceData?.backlog?.waitingDispatchNumber || 0 }} -->
+                </span>
               </div>
             </div>
             <div>
@@ -358,13 +471,27 @@ const hanleRefreshChart = (payload) => {
                   :percentage="
                     workspaceData?.backlog?.unassignedTransportTaskRate
                   "
+                  :color="
+                    getProgressColor(
+                      workspaceData?.backlog?.unassignedTransportTaskRate,
+                    )
+                  "
                 />
               </div>
               <div class="text-center mt-[.5em]">
                 <span class="mr-1">未分配运输</span>
-                <span>{{
+                <span>
+                  <ReNormalCountTo
+                    :duration="3000"
+                    :startVal="0"
+                    :endVal="
+                      workspaceData?.backlog?.unassignedTransportTaskNumber
+                    "
+                  />
+                  <!-- {{
                   workspaceData?.backlog?.unassignedTransportTaskNumber || 0
-                }}</span>
+                }} -->
+                </span>
               </div>
             </div>
             <div>
@@ -372,13 +499,25 @@ const hanleRefreshChart = (payload) => {
                 <el-progress
                   type="circle"
                   :percentage="workspaceData?.backlog?.timeoutTransportTaskRate"
+                  :color="
+                    getProgressColor(
+                      workspaceData?.backlog?.timeoutTransportTaskRate,
+                    )
+                  "
                 />
               </div>
               <div class="text-center mt-[.5em]">
                 <span class="mr-1">超时运输</span>
-                <span>{{
+                <span>
+                  <ReNormalCountTo
+                    :duration="3000"
+                    :startVal="0"
+                    :endVal="workspaceData?.backlog?.timeoutTransportTaskNumber"
+                  />
+                  <!-- {{
                   workspaceData?.backlog?.timeoutTransportTaskNumber || 0
-                }}</span>
+                }} -->
+                </span>
               </div>
             </div>
           </div>
@@ -425,13 +564,23 @@ const hanleRefreshChart = (payload) => {
                 <el-progress
                   type="circle"
                   :percentage="workspaceData?.todayData?.taskInTransitRate"
+                  :color="
+                    getProgressColor(
+                      workspaceData?.todayData?.taskInTransitRate,
+                    )
+                  "
                 />
               </div>
               <div class="text-center mt-[.5em]">
                 <span class="mr-1">运输中</span>
                 <span>
-                  {{ workspaceData?.todayData?.taskInTransitNumber || 0 }}</span
-                >
+                  <ReNormalCountTo
+                    :duration="3000"
+                    :startVal="0"
+                    :endVal="workspaceData?.todayData?.taskInTransitNumber"
+                  />
+                  <!-- {{ workspaceData?.todayData?.taskInTransitNumber || 0 }} -->
+                </span>
               </div>
             </div>
             <div>
@@ -439,15 +588,25 @@ const hanleRefreshChart = (payload) => {
                 <el-progress
                   type="circle"
                   :percentage="workspaceData?.todayData?.taskInDeliveryRate"
+                  :color="
+                    getProgressColor(
+                      workspaceData?.todayData?.taskInDeliveryRate,
+                    )
+                  "
                 />
               </div>
               <div class="text-center mt-[.5em]">
                 <span class="mr-1">派送中</span>
                 <span>
-                  {{
+                  <ReNormalCountTo
+                    :duration="3000"
+                    :startVal="0"
+                    :endVal="workspaceData?.todayData?.taskInDeliveryNumber"
+                  />
+                  <!-- {{
                     workspaceData?.todayData?.taskInDeliveryNumber || 0
-                  }}</span
-                >
+                  }} -->
+                </span>
               </div>
             </div>
           </div>
@@ -460,8 +619,8 @@ const hanleRefreshChart = (payload) => {
         <el-col
           v-for="(item, index) in commonFuc"
           :key="index"
-          :md="4"
-          :sm="4"
+          :md="3"
+          :sm="3"
           :xs="24"
           :enter="{
             opacity: 1,
@@ -474,7 +633,12 @@ const hanleRefreshChart = (payload) => {
         >
           <el-card
             shadow="hover"
-            style="background-color: #eceef1; border: none"
+            :style="{
+              'background-color': theme == 'dark' ? '#101010' : ' #eceef1',
+              border: 'none',
+            }"
+            class="cursor-pointer"
+            @click="gopage(item.topagename)"
           >
             <div class="flex flex-col items-center">
               <div class="mb-5">
