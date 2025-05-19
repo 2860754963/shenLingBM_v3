@@ -15,5 +15,5 @@ defineExpose({ getImgCode });
 </script>
 
 <template>
-  <canvas id="captchaCanvas" @click="handleRefresh" />
+  <img id="captchaCanvas" @click="handleRefresh" />
 </template>
