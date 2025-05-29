@@ -5,13 +5,13 @@ import {
   router,
   resetRouter,
   routerArrays,
-  storageLocal
+  storageLocal,
 } from "../utils";
 import {
   type UserResult,
   type RefreshTokenResult,
   getLogin,
-  refreshTokenApi
+  refreshTokenApi,
 } from "@/api/user";
 import { useMultiTagsStoreHook } from "./multiTags";
 import { type DataInfo, setToken, removeToken, userKey } from "@/utils/auth";
@@ -37,7 +37,7 @@ export const useUserStore = defineStore({
     // 是否勾选了登录页的免登录
     isRemembered: false,
     // 登录页的免登录存储几天，默认7天
-    loginDay: 7
+    loginDay: 7,
   }),
   actions: {
     /** 存储头像 */
@@ -77,30 +77,30 @@ export const useUserStore = defineStore({
       this.loginDay = Number(value);
     },
     /** 登入 */
-    async loginByUsername(data) {  
-      return new Promise<UserResult>((resolve, reject) => { 
-        getLogin(data)
-          .then(data => {
+    async loginByUsername(params) {
+      return new Promise<UserResult>((resolve, reject) => {
+        getLogin(params)
+          .then((data) => {
+            console.log("🚀🚀🚀 ~ loginByUsername ~ data🚀🚀🚀", data);
+
             if (data.code === 200) {
               let usertokenobj = {
                 token: data.data.token.token,
                 accessToken: data.data.token.token,
                 expires: data.data.token.expire,
                 refreshToken: data.data.token.token,
-                ...data.data.user
-              }
+                ...data.data.user,
+              };
               setToken(usertokenobj);
               resolve(data);
-            } else { 
+            } else {
               reject(data);
             }
           })
-          .catch(error => {
+          .catch((error) => {
             reject(error);
           });
-           
       });
-       
     },
     /** 前端登出（不调用接口） */
     logOut() {
@@ -114,21 +114,21 @@ export const useUserStore = defineStore({
     },
     /** 刷新`token` */
     async handRefreshToken(data) {
-      console.log("🚀 ~ handRefreshToken ~ data:", data)
+      console.log("🚀 ~ handRefreshToken ~ data:", data);
       return new Promise<RefreshTokenResult>((resolve, reject) => {
         refreshTokenApi(data)
-          .then(data => {
+          .then((data) => {
             if (data) {
               setToken(data.data);
               resolve(data);
             }
           })
-          .catch(error => {
+          .catch((error) => {
             reject(error);
           });
       });
-    }
-  }
+    },
+  },
 });
 
 export function useUserStoreHook() {

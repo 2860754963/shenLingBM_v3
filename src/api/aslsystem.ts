@@ -1,10 +1,10 @@
 import { http } from "@/utils/http";
 // 获取图片验证码
-export function getCodeImg(params) {
+export function getCodeImg() {
   return http.request(
     "get",
-    "/slbma/data/captcha",
-    { params },
+    "/slbma/api/captcha",
+    {},
     { responseType: "json" },
     // responseType还有什么选项
   );

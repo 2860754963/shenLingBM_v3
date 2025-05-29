@@ -68,14 +68,11 @@ const onLogin = async (formEl: FormInstance | undefined) => {
   await formEl.validate((valid) => {
     if (valid) {
       loading.value = true;
-      // 获取 slVerifyKey
-      const slVerifyKey = JSON.parse(localStorage.getItem("slVerifyKey") || "");
       useUserStoreHook()
         .loginByUsername({
-          account: ruleForm.username,
+          username: ruleForm.username,
           password: ruleForm.password,
           code: ruleForm.verifyCode,
-          key: slVerifyKey,
         })
         .then((res) => {
           if (res.code === 200) {
@@ -92,7 +89,7 @@ const onLogin = async (formEl: FormInstance | undefined) => {
           }
         })
         .catch((err) => {
-          message(err.msg, { type: "error" });
+          message(err.data, { type: "error" });
         })
         .finally(() => (loading.value = false));
     }
