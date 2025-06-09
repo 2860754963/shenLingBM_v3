@@ -7,7 +7,6 @@ import { getCodeImg } from "@/api/aslsystem";
 export const getImgCode = async () => {
   let blob: Blob | any = await getCodeImg();
   if (blob) {
-    console.log("🚀🚀🚀 ~ getImgCode ~ blob🚀🚀🚀", blob);
     let imgElement = document.getElementById("captchaCanvas");
 
     imgElement.setAttribute("src", blob.data.img); // 将 Blob 转换为可用的 URL

@@ -22,7 +22,7 @@ export interface DataInfo<T> {
 }
 
 export const userKey = "user-info";
-export const TokenKey = "authorized-token"; 
+export const TokenKey = "authorized-token";
 /**
  * 通过`multiple-tabs`是否在`cookie`中，判断用户是否已经登录系统，
  * 从而支持多标签页打开已经登录的系统后无需再登录。
@@ -47,23 +47,25 @@ export function getToken(): DataInfo<number> {
  */
 export function setToken(data) {
   let expires = 0;
-  const {accessToken, refreshToken } = data; 
-  const { isRemembered, loginDay } = useUserStoreHook(); 
+  const { accessToken, refreshToken } = data;
+  const { isRemembered, loginDay } = useUserStoreHook();
   expires = data.expires; // 如果后端直接设置时间戳，将此处代码改为expires = data.expires，然后把上面的DataInfo<Date>改成DataInfo<number>即可
   const cookieString = JSON.stringify({ accessToken, expires, refreshToken });
-  expires > 0? Cookies.set(TokenKey, cookieString, {
-         // expires: (expires - Date.now()) / 86400000
-         expires:expires
-       }) : Cookies.set(TokenKey, cookieString);
-    // Cookies.set(TokenKey, cookieString);
+  expires > 0
+    ? Cookies.set(TokenKey, cookieString, {
+        // expires: (expires - Date.now()) / 86400000
+        expires: expires,
+      })
+    : Cookies.set(TokenKey, cookieString);
+  // Cookies.set(TokenKey, cookieString);
   Cookies.set(
     multipleTabsKey,
     "true",
     isRemembered
       ? {
-          expires: loginDay
+          expires: loginDay,
         }
-      : {}
+      : {},
   );
 
   function setUserKey({ avatar, username, nickname, roles, permissions }) {
@@ -79,7 +81,7 @@ export function setToken(data) {
       username,
       nickname,
       roles,
-      permissions
+      permissions,
     });
   }
 
@@ -90,7 +92,7 @@ export function setToken(data) {
       username,
       nickname: data?.nickname ?? "",
       roles,
-      permissions: data?.permissions ?? []
+      permissions: data?.permissions ?? [],
     });
   } else {
     const avatar =
@@ -108,7 +110,7 @@ export function setToken(data) {
       username,
       nickname,
       roles,
-      permissions
+      permissions,
     });
   }
 }

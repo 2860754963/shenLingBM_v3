@@ -100,7 +100,7 @@ type ResultTable = {
 export const getLogin = (data?: object) => {
   console.log("进登陆借口");
   // slbm
-  return http.request<UserResult>("post", "/slbma/api/user/login", { data });
+  return http.request<UserResult>("post", "/slbma/api/login", { data });
 };
 
 /** 刷新`token` */

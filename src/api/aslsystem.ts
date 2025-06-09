@@ -6,6 +6,5 @@ export function getCodeImg() {
     "/slbma/api/captcha",
     {},
     { responseType: "json" },
-    // responseType还有什么选项
   );
 }
