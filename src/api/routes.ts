@@ -12,5 +12,5 @@ import { http } from "@/utils/http";
 
 // slbm
 export const getAsyncRoutes = () => {
-  return http.request<any>("get", "/slbma/api/user/menus");
+  return http.request<any>("get", "/slbma/api/user/getMenus");
 };

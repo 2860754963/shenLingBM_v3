@@ -4,11 +4,11 @@ import ReCropper from "@/components/ReCropper";
 import { formatBytes } from "@pureadmin/utils";
 
 defineOptions({
-  name: "ReCropperPreview"
+  name: "ReCropperPreview",
 });
 
 defineProps({
-  imgSrc: String
+  imgSrc: String,
 });
 
 const emit = defineEmits(["cropper"]);
@@ -20,6 +20,9 @@ const showPopover = ref(false);
 const cropperImg = ref<string>("");
 
 function onCropper({ base64, blob, info }) {
+  console.log("🚀🚀🚀 ~ onCropper ~ info🚀🚀🚀", info);
+  console.log("🚀🚀🚀 ~ onCropper ~ blob🚀🚀🚀", blob);
+  console.log("🚀🚀🚀 ~ onCropper ~ base64🚀🚀🚀", base64);
   infos.value = info;
   cropperImg.value = base64;
   emit("cropper", { base64, blob, info });

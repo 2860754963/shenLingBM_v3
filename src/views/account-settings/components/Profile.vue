@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import { formUpload } from "@/api/mock";
+import { formUpload } from "@/api/aslsystem";
 import { message } from "@/utils/message";
 import { type UserInfo, getMine } from "@/api/user";
 import type { FormInstance, FormRules } from "element-plus";
@@ -9,7 +9,7 @@ import { createFormData, deviceDetection } from "@pureadmin/utils";
 import uploadLine from "@iconify-icons/ri/upload-line";
 
 defineOptions({
-  name: "Profile"
+  name: "Profile",
 });
 
 const imgSrc = ref("");
@@ -24,36 +24,36 @@ const userInfos = reactive({
   nickname: "",
   email: "",
   phone: "",
-  description: ""
+  description: "",
 });
 
 const rules = reactive<FormRules<UserInfo>>({
-  nickname: [{ required: true, message: "昵称必填", trigger: "blur" }]
+  nickname: [{ required: true, message: "昵称必填", trigger: "blur" }],
 });
 
 function queryEmail(queryString, callback) {
   const emailList = [
     { value: "@qq.com" },
     { value: "@126.com" },
-    { value: "@163.com" }
+    { value: "@163.com" },
   ];
   let results = [];
   let queryList = [];
-  emailList.map(item =>
-    queryList.push({ value: queryString.split("@")[0] + item.value })
+  emailList.map((item) =>
+    queryList.push({ value: queryString.split("@")[0] + item.value }),
   );
   results = queryString
     ? queryList.filter(
-        item =>
-          item.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+        (item) =>
+          item.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0,
       )
     : queryList;
   callback(results);
 }
 
-const onChange = uploadFile => {
+const onChange = (uploadFile) => {
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = (e) => {
     imgSrc.value = e.target.result as string;
     isShow.value = true;
   };
@@ -69,19 +69,23 @@ const handleClose = () => {
 const onCropper = ({ blob }) => (cropperBlob.value = blob);
 
 const handleSubmitImage = () => {
+  console.log("🚀🚀🚀 ~ cropperBlob.value 🚀🚀🚀", cropperBlob.value);
+  // return;
   const formData = createFormData({
-    files: new File([cropperBlob.value], "avatar")
+    files: cropperBlob.value,
   });
+  console.log("🚀🚀🚀 ~ handleSubmitImage ~ formData🚀🚀🚀", formData);
   formUpload(formData)
-    .then(({ success, data }) => {
-      if (success) {
-        message("更新头像成功", { type: "success" });
-        handleClose();
-      } else {
-        message("更新头像失败");
-      }
+    .then((res) => {
+      console.log("🚀🚀🚀 ~ .then ~ res🚀🚀🚀", res);
+      // if (success) {
+      //   message("更新头像成功", { type: "success" });
+      //   handleClose();
+      // } else {
+      //   message("更新头像失败");
+      // }
     })
-    .catch(error => {
+    .catch((error) => {
       message(`提交异常 ${error}`, { type: "error" });
     });
 };
@@ -98,7 +102,7 @@ const onSubmit = async (formEl: FormInstance) => {
   });
 };
 
-getMine().then(res => {
+getMine().then((res) => {
   Object.assign(userInfos, res.data);
 });
 </script>
@@ -107,7 +111,7 @@ getMine().then(res => {
   <div
     :class="[
       'min-w-[180px]',
-      deviceDetection() ? 'max-w-[100%]' : 'max-w-[70%]'
+      deviceDetection() ? 'max-w-[100%]' : 'max-w-[70%]',
     ]"
   >
     <h3 class="my-8">个人信息</h3>

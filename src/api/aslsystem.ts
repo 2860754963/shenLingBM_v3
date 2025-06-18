@@ -3,8 +3,21 @@ import { http } from "@/utils/http";
 export function getCodeImg() {
   return http.request(
     "get",
-    "/slbma/api/captcha",
+    "/slbma/api/user/captcha",
     {},
     { responseType: "json" },
   );
 }
+
+export const formUpload = (data) => {
+  return http.request(
+    "post",
+    "/slbma/api/upload",
+    { data },
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
+};
