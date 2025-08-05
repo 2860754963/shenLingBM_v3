@@ -98,9 +98,8 @@ type ResultTable = {
 
 /** 登录 */
 export const getLogin = (data?: object) => {
-  console.log("进登陆借口");
   // slbm
-  return http.request<UserResult>("post", "/slbma/api/user/login", { data });
+  return http.request<UserResult>("post", "/nodesys/api/user/login", { data });
 };
 
 /** 刷新`token` */
@@ -111,7 +110,9 @@ export const refreshTokenApi = (data?: object) => {
 
 /** 账户设置-个人信息 */
 export const getMine = (data?: object) => {
-  return http.request<UserInfoResult>("get", "/mine", { data });
+  return http.request<UserInfoResult>("get", "/nodesys/api/user/mine", {
+    data,
+  });
 };
 
 /** 账户设置-个人安全日志 */
