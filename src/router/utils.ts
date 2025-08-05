@@ -36,7 +36,7 @@ function handleSLrouters(data) {
       path: item.path,
       name: item.name,
       meta: {
-        title: item.meta.title,
+        title: item.meta?.title,
         roles: ["admin", "common"], // 根据需求，添加默认的roles
         icon: item.meta.icon || "",
         breadcrumb: item.meta.breadcrumb || false,

@@ -3,7 +3,7 @@ import { http } from "@/utils/http";
 export function getCodeImg() {
   return http.request(
     "get",
-    "/slbma/api/user/captcha",
+    "/nodesys/api/user/captcha",
     {},
     { responseType: "json" },
   );
