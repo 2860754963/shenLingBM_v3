@@ -5,12 +5,11 @@ import _ from "lodash";
 defineOptions({
   name: "ReImageVerify",
 });
-onMounted(() => {
-  if (!getImgCode()) {
-    let imgElement = document.getElementById("captchaCanvas");
-    console.log("🚀🚀🚀 ~ onMounted ~ imgElement🚀🚀🚀", imgElement);
-    imgElement.innerHTML = "获取验证码失败,点击重试";
-  }
+
+let result = ref(true);
+
+onMounted(async () => {
+  result.value = await getImgCode();
 });
 const handleRefresh = () => {
   _.debounce(getImgCode, 800)();
@@ -19,10 +18,8 @@ defineExpose({ getImgCode });
 </script>
 
 <template>
-  <div>
-    <img id="captchaCanvas" @click="handleRefresh" />
-    <!-- <el-button type="primary" :text="true" @click="handleRefresh"
-      >点击重试</el-button
-    > -->
+  <img v-if="result" id="captchaCanvas" @click="handleRefresh" />
+  <div v-else>
+    <el-button type="primary" @click="handleRefresh">换一张</el-button>
   </div>
 </template>

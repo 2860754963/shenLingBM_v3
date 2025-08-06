@@ -82,14 +82,12 @@ export const useUserStore = defineStore({
         getLogin(params)
           .then((data) => {
             console.log("🚀🚀🚀 ~ loginByUsername ~ data🚀🚀🚀", data);
-
             if (data.code === 200) {
               let usertokenobj = {
                 token: data.token,
                 accessToken: data.token,
-                expires: data.data.expire || 21600000,
+                expires: data.expire || 21600000,
                 refreshToken: data.token,
-                ...data?.data,
               };
               setToken(usertokenobj);
               resolve(data);

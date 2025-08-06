@@ -2,6 +2,8 @@ import { http } from "@/utils/http";
 
 export type UserResult = {
   code: number;
+  token: string;
+  expire: number;
   data: {
     token: {
       expire: number;
