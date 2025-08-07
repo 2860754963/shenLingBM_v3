@@ -31,7 +31,7 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
           rewrite: (path) => path.replace(/^\/slbma/, ""),
         },
         "/nodesys": {
-          target: "http://localhost:8989", //本地调试时使用
+          target: "https://api.nigulasi.online", //本地调试时使用
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/nodesys/, ""),
         },
