@@ -38,8 +38,8 @@ function handleSLrouters(data) {
       meta: {
         title: item.meta?.title,
         roles: ["admin", "common"], // 根据需求，添加默认的roles
-        icon: item.meta.icon || "",
-        breadcrumb: item.meta.breadcrumb || false,
+        icon: item.meta?.icon || "",
+        breadcrumb: item.meta?.breadcrumb || false,
       },
     };
     if (item.children && item.children.length > 0) {
