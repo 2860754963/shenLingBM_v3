@@ -29,11 +29,20 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
           target: "https://slwl-api.itheima.net", //本地调试时使用
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/slbma/, ""),
+          bypass(req, res, options) {
+            const proxyURL = options.target + options.rewrite(req.url);
+            res.setHeader("x-req-proxyURL", proxyURL); // 设置响应头可以看到
+          },
         },
         "/nodesys": {
-          target: "https://api.nigulasi.online", //本地调试时使用
+          target: "https://api.nigulasi.online", //本地调试时使用。
+          // target: "http://localhost:8989", //本地调试时使用。
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/nodesys/, ""),
+          bypass(req, res, options) {
+            const proxyURL = options.target + options.rewrite(req.url);
+            res.setHeader("x-req-proxyURL", proxyURL); // 设置响应头可以看到
+          },
         },
       },
       // 预热文件以提前转换和缓存结果，降低启动期间的初始页面加载时长并防止转换瀑布
