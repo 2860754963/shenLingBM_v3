@@ -58,12 +58,13 @@ const { title, getDropdownItemStyle, getDropdownItemClass, icp } = useNav();
 const { locale, translationCh, translationEn } = useTranslationLang();
 
 const ruleForm = reactive({
-  username: "nigulasi",
-  password: "123456",
+  username: "admin",
+  password: "admin123",
   verifyCode: "",
 });
 
 const onLogin = async (formEl: FormInstance | undefined) => {
+  console.log("登陆123123");
   if (!formEl) return;
   await formEl.validate((valid) => {
     if (valid) {

@@ -84,11 +84,16 @@ export const useUserStore = defineStore({
             console.log("🚀🚀🚀 ~ loginByUsername ~ data🚀🚀🚀", data);
             if (data.code === 200) {
               let usertokenobj = {
-                token: data.token,
-                accessToken: data.token,
-                expires: data.expire || 21600000,
-                refreshToken: data.token,
+                token: data.data.token,
+                accessToken: data.data.token,
+                expires: 21600000,
+                refreshToken: data.data.token,
               };
+              console.log(
+                "🚀🚀🚀 ~ user.ts ~ usertokenobj🚀🚀🚀",
+                usertokenobj,
+              );
+
               setToken(usertokenobj);
               resolve(data);
             } else {
